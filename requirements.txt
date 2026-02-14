@@ -1,8 +1,8 @@
 streamlit
-pandas
+pandas<2.1.0
 numpy==1.24.4
 yfinance
-pandas-ta
+pandas-ta==0.3.14b0
 torch
 neuralprophet
 plotly
