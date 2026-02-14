@@ -9,7 +9,6 @@ import torch.nn.functional as F
 import pickle
 import datetime
 import plotly.graph_objects as go
-from neuralprophet import NeuralProphet
 import matplotlib.patheffects as patheffects
 
 # ==========================================
@@ -124,15 +123,8 @@ def load_neuro_engines():
         st.error(f"Erreur LSTM: {e}")
         lstm_model, lstm_scaler = None, None
 
-    # 2. NeuralProphet Engine
-    try:
-        with open('Hamad_Rassem_Mahamat_sn_ann_neuralprophet_best_model.pkl', 'rb') as f:
-            prophet_model = pickle.load(f)
-    except Exception as e:
-        st.error(f"Erreur Prophet: {e}")
-        prophet_model = None
 
-    return (lstm_model, lstm_scaler), prophet_model
+    return (lstm_model, lstm_scaler), 
 
 
 # ==========================================
@@ -152,12 +144,7 @@ def get_live_data(ticker="MSFT"):
     df['MACD'] = ta.macd(df['Close'])['MACD_12_26_9']
     df['Vol_Shock'] = (df['Volume'] - df['Volume'].rolling(20).mean()) / df['Volume'].rolling(20).std()
 
-    # Pour Prophet (Besoin de colonnes spécifiques)
-    df_prophet = df.copy().reset_index()
-    df_prophet.rename(columns={'Date': 'ds', 'Close': 'y'}, inplace=True)
-    df_prophet['Vol_Mom'] = df_prophet['Volume'].pct_change()
-
-    return df.dropna(), df_prophet.dropna()
+    return df.dropna(), 
 
 
 # ==========================================
