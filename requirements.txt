@@ -1,6 +1,6 @@
 streamlit
 pandas
-numpy==1.24.4
+numpy
 yfinance
 pandas-ta
 torch
@@ -8,6 +8,7 @@ plotly
 scikit-learn
 fpdf2
 setuptools
+
 
 
 
