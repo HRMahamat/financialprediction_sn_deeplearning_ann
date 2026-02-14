@@ -82,22 +82,38 @@ st.markdown("""
 class CNN_LSTM_Net(nn.Module):
     def __init__(self, num_features):
         super(CNN_LSTM_Net, self).__init__()
-        self.conv1 = nn.Conv1d(in_channels=num_features, out_channels=64, kernel_size=3)
-        self.bn1 = nn.BatchNorm1d(64)
-        self.lstm1 = nn.LSTM(input_size=64, hidden_size=128, bidirectional=True, batch_first=True)
-        self.lstm2 = nn.LSTM(input_size=256, hidden_size=64, bidirectional=True, batch_first=True)
-        self.fc_res1 = nn.Linear(128, 128)
-        self.fc_res2 = nn.Linear(128, 128)
-        self.ln = nn.LayerNorm(128)
-        self.out = nn.Linear(128, 14)
+        # Le state_dict montre que le modèle a été sauvé comme une suite de couches (0, 1, 2...)
+        # On recrée exactement cette séquence
+        self.network = nn.Sequential(
+            nn.Conv1d(in_channels=num_features, out_channels=64, kernel_size=3), # 0
+            nn.BatchNorm1d(64),                                                  # 1
+            # Les LSTM ne peuvent pas être dans Sequential facilement, 
+            # mais ton erreur montre qu'ils ont les index 2 et 3
+        )
+        
+        # On définit les couches séparément avec les index correspondant aux "Unexpected keys"
+        self.lstm1 = nn.LSTM(input_size=64, hidden_size=128, bidirectional=True, batch_first=True) # Index 2
+        self.lstm2 = nn.LSTM(input_size=256, hidden_size=64, bidirectional=True, batch_first=True) # Index 3
+        
+        self.fc_res1 = nn.Linear(128, 128) # Index 4
+        self.fc_res2 = nn.Linear(128, 128) # Index 5
+        self.ln = nn.LayerNorm(128)        # Index 6
+        self.out = nn.Linear(128, 14)      # Index 7
 
     def forward(self, x):
+        # 1. CNN + BN (Index 0 et 1)
         x = x.permute(0, 2, 1)
         x = F.pad(x, (2, 0))
-        x = F.leaky_relu(self.bn1(self.conv1(x)), 0.01)
+        x = self.network[0](x) # Conv1d
+        x = self.network[1](x) # BatchNorm1d
+        x = F.leaky_relu(x, 0.01)
+        
+        # 2. LSTM (Index 2 et 3)
         x = x.permute(0, 2, 1)
         x, _ = self.lstm1(x)
         output, _ = self.lstm2(x)
+        
+        # 3. Résiduel et Sortie (Index 4, 5, 6, 7)
         x = output[:, -1, :]
         shortcut = x
         x = F.silu(self.fc_res1(x))
@@ -117,7 +133,17 @@ def load_neuro_engines():
         with open('Hamad_Rassem_Mahamat_sn_ann_lstm_best_model.pkl', 'rb') as f:
             lstm_scaler = pickle.load(f)
         lstm_model = CNN_LSTM_Net(num_features=5)
-        lstm_model.load_state_dict(torch.load('Hamad_Rassem_Mahamat_sn_ann_lstm_best_model.pth', map_location='cpu'))
+        state_dict = torch.load('Hamad_Rassem_Mahamat_sn_ann_lstm_best_model.pth', map_location='cpu')
+        # On crée un dictionnaire de correspondance pour transformer "0.weight" en "network.0.weight", etc.
+        from collections import OrderedDict
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            if k.startswith('0') or k.startswith('1'):
+                new_state_dict[f"network.{k}"] = v
+            else:
+                new_state_dict[k] = v
+        
+        lstm_model.load_state_dict(new_state_dict)
         lstm_model.eval()
     except Exception as e:
         st.error(f"Erreur LSTM: {e}")
@@ -249,5 +275,6 @@ st.sidebar.image("https://img.icons8.com/nolan/512/ai.png", width=100)
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status Engine :** Optimal")
 st.sidebar.write(f"📅 **Dernière Synchro :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
