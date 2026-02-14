@@ -1,10 +1,10 @@
 streamlit
-pandas<2.1.0
+pandas>=2.1.1
 numpy==1.24.4
 yfinance
-pandas-ta==0.3.14b0
+pandas-ta
 torch
-neuralprophet
 plotly
 scikit-learn
 fpdf2
+setuptools
