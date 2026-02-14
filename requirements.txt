@@ -8,7 +8,4 @@ plotly
 scikit-learn
 fpdf2
 setuptools
-
-
-
-
+matplotlib
