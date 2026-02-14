@@ -1,8 +1,8 @@
 streamlit
 pandas==2.0.3
 numpy==1.24.4
-yfinance
-pandas-ta==0.3.14b0
+yfinance>=0.2.38
+pandas-ta
 torch
 plotly
 scikit-learn
