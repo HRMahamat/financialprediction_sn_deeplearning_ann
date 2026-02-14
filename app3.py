@@ -128,29 +128,47 @@ class CNN_LSTM_Net(nn.Module):
 # ==========================================
 @st.cache_resource
 def load_neuro_engines():
-    # 1. LSTM Engine
     try:
+        # 1. Chargement du Scaler
         with open('Hamad_Rassem_Mahamat_sn_ann_lstm_best_model.pkl', 'rb') as f:
             lstm_scaler = pickle.load(f)
+        
+        # 2. Initialisation du modèle
         lstm_model = CNN_LSTM_Net(num_features=5)
         state_dict = torch.load('Hamad_Rassem_Mahamat_sn_ann_lstm_best_model.pth', map_location='cpu')
-        # On crée un dictionnaire de correspondance pour transformer "0.weight" en "network.0.weight", etc.
+        
+        # 3. Mapping dynamique des clés (Correction de l'erreur)
         from collections import OrderedDict
         new_state_dict = OrderedDict()
+        
+        # Dictionnaire de traduction des index vers tes noms de variables
+        mapping = {
+            "0": "network.0", # Conv1d
+            "1": "network.1", # BatchNorm1d
+            "2": "lstm1",
+            "3": "lstm2",
+            "4": "fc_res1",
+            "5": "fc_res2",
+            "6": "ln",
+            "7": "out"
+        }
+        
         for k, v in state_dict.items():
-            if k.startswith('0') or k.startswith('1'):
-                new_state_dict[f"network.{k}"] = v
+            prefix = k.split('.')[0] # Récupère l'index (ex: "2")
+            suffix = ".".join(k.split('.')[1:]) # Récupère le reste (ex: "weight_ih_l0")
+            if prefix in mapping:
+                new_key = f"{mapping[prefix]}.{suffix}"
+                new_state_dict[new_key] = v
             else:
                 new_state_dict[k] = v
         
         lstm_model.load_state_dict(new_state_dict)
         lstm_model.eval()
+        return (lstm_model, lstm_scaler)
+
     except Exception as e:
-        st.error(f"Erreur LSTM: {e}")
-        lstm_model, lstm_scaler = None, None
-
-
-    return (lstm_model, lstm_scaler)
+        st.error(f"Erreur de synchronisation du moteur IA: {e}")
+        return None, None
 
 
 # ==========================================
@@ -158,19 +176,22 @@ def load_neuro_engines():
 # ==========================================
 def get_live_data(ticker="MSFT"):
     day = datetime.datetime.now().strftime('%Y-%m-%d')
-    df = yf.download(ticker, start="2020-01-01", end=day)
-    vix = yf.download("^VIX", start="2020-01-01", end=day)['Close']
+    # Ajout de progress=False pour éviter des bugs dans les logs Streamlit
+    df = yf.download(ticker, start="2020-01-01", end=day, progress=False)
+    vix = yf.download("^VIX", start="2020-01-01", end=day, progress=False)['Close']
 
-    if isinstance(df.columns, pd.MultiIndex): df.columns = df.columns.droplevel(1)
+    if isinstance(df.columns, pd.MultiIndex): 
+        df.columns = df.columns.droplevel(1)
 
-    # Feature Engineering (Identique au training)
+    # Feature Engineering
     df['Log_Ret'] = np.log(df['Close'] / df['Close'].shift(1))
     df['VIX_Norm'] = (vix - vix.rolling(50).mean()) / vix.rolling(50).std()
     df['RSI'] = ta.rsi(df['Close'], length=14) / 100
     df['MACD'] = ta.macd(df['Close'])['MACD_12_26_9']
     df['Vol_Shock'] = (df['Volume'] - df['Volume'].rolling(20).mean()) / df['Volume'].rolling(20).std()
 
-    return df.dropna(), 
+    # CRUCIAL : Enlève la virgule après dropna()
+    return df.dropna()
 
 
 # ==========================================
@@ -200,7 +221,11 @@ with tab1:
     if run_analysis:
         with st.spinner("Extraction des signaux de marché..."):
             df_live = get_live_data(ticker)
-            last_price = df_live['Close'].iloc[-1]
+            
+            if df_live.empty:
+                st.error("Impossible de récupérer les données pour ce symbole.")
+            else:
+                last_price = float(df_live['Close'].iloc[-1])
 
         col_res1, col_res2 = st.columns(2)
 
@@ -275,6 +300,7 @@ st.sidebar.image("https://img.icons8.com/nolan/512/ai.png", width=100)
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status Engine :** Optimal")
 st.sidebar.write(f"📅 **Dernière Synchro :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
 
