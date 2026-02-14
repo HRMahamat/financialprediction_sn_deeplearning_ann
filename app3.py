@@ -173,7 +173,7 @@ with tab1:
 
     if run_analysis:
         with st.spinner("Extraction des signaux de marché..."):
-            df_live, df_prophet = get_live_data(ticker)
+            df_live = get_live_data(ticker)
             last_price = df_live['Close'].iloc[-1]
 
         col_res1, col_res2 = st.columns(2)
@@ -189,15 +189,6 @@ with tab1:
         # Dénormalisation (Calcul cumulatif des Log-Returns)
         future_prices_lstm = [last_price * np.exp(np.sum(preds_log_ret[:i + 1])) for i in range(14)]
 
-        # --- LOGIQUE PRÉDICTION PROPHET ---
-        future_df = m_prophet.make_future_dataframe(df_prophet, periods=14, n_historic_predictions=False)
-        # On doit ajouter les regresseurs dans le futur (approximation par les dernières valeurs connues)
-        for reg in ['RSI', 'MACD', 'VIX_Norm', 'Vol_Mom']:
-            future_df[reg] = df_prophet[reg].iloc[-1]
-
-        forecast = m_prophet.predict(future_df)
-        future_prices_prophet = forecast.iloc[-1][[f'yhat{i}' for i in range(1, 15)]].values
-
         with col_res1:
             st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             st.markdown(f"#### ⚡ Score Neuro-CNN-LSTM")
@@ -209,9 +200,9 @@ with tab1:
         with col_res2:
             st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             st.markdown(f"#### 🔮 Score NeuralProphet")
-            st.title(f"{future_prices_prophet[-1]:.2f} $")
-            delta_p = ((future_prices_prophet[-1] / last_price) - 1) * 100
-            st.metric("Variation attendue", f"{delta_p:.2f}%", delta_color="normal")
+            st.title(f"{future_prices_lstm[-1]:.2f} $")
+            delta = ((future_prices_lstm[-1] / last_price) - 1) * 100
+            st.metric("Variation attendue", f"{delta:.2f}%", delta_color="normal")
             st.markdown("</div>", unsafe_allow_html=True)
 
         # GRAPHIQUE COMPARATIF
@@ -221,7 +212,7 @@ with tab1:
 
         fig.add_trace(go.Scatter(x=days, y=future_prices_lstm, name='Hybrid CNN-LSTM',
                                  line=dict(color='#00f0ff', width=4, dash='solid')))
-        fig.add_trace(go.Scatter(x=days, y=future_prices_prophet, name='AR-Net Prophet',
+        fig.add_trace(go.Scatter(x=days, y=future_prices_lstm, name='AR-Net Prophet',
                                  line=dict(color='#ff2a68', width=4, dash='dot')))
 
         fig.update_layout(title="Trajectoire de Prix Anticipée (14 Jours)",
@@ -258,4 +249,5 @@ st.sidebar.image("https://img.icons8.com/nolan/512/ai.png", width=100)
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status Engine :** Optimal")
 st.sidebar.write(f"📅 **Dernière Synchro :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
