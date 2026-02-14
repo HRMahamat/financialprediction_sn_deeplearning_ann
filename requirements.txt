@@ -7,6 +7,7 @@ torch
 plotly
 scikit-learn
 fpdf2
-setuptools<70.0.0
+setuptools
+
 
 
