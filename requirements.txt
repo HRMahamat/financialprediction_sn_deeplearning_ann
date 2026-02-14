@@ -1,0 +1,10 @@
+streamlit
+pandas
+numpy==1.24.4
+yfinance
+pandas-ta
+torch
+neuralprophet
+plotly
+scikit-learn
+fpdf2
