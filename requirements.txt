@@ -1,5 +1,5 @@
 streamlit
-pandas==2.0.3
+pandas
 numpy==1.24.4
 yfinance
 pandas-ta
@@ -8,4 +8,5 @@ plotly
 scikit-learn
 fpdf2
 setuptools<70.0.0
+
 
