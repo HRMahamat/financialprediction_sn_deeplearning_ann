@@ -124,7 +124,7 @@ def load_neuro_engines():
         lstm_model, lstm_scaler = None, None
 
 
-    return (lstm_model, lstm_scaler), 
+    return (lstm_model, lstm_scaler)
 
 
 # ==========================================
@@ -154,7 +154,7 @@ st.markdown('<h1 class="title-text">ALPHA PREDICT PRO</h1>', unsafe_allow_html=T
 st.markdown("<p style='text-align: center; color: #888;'>Neuro-Forecasting Engine for OpenAI (MSFT) Proxy</p>",
             unsafe_allow_html=True)
 
-(m_lstm, s_lstm), m_prophet = load_neuro_engines()
+(m_lstm, s_lstm)= load_neuro_engines()
 
 tab1, tab2, tab3 = st.tabs(["🚀 TERMINAL DE PRÉDICTION", "📊 ANALYSE TECHNIQUE", "⚙️ MOTEURS IA"])
 
@@ -258,3 +258,4 @@ st.sidebar.image("https://img.icons8.com/nolan/512/ai.png", width=100)
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status Engine :** Optimal")
 st.sidebar.write(f"📅 **Dernière Synchro :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
