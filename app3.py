@@ -236,7 +236,7 @@ with tab1:
                 st.markdown("### 💠 Analyse BI-LSTM")
                 
                 # Remplace 'chemin/vers/ton_image_lstm.png' par ton vrai nom de fichier
-                st.image("lstm.png", caption="Prévisions Neural-Network", use_container_width=True)
+                st.image("lstm.png", caption="", use_container_width=True)
                 
                 st.info("Le modèle BI-LSTM détecte les anomalies de volatilité locales.")
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -246,7 +246,7 @@ with tab1:
                 st.markdown("### 📈 Analyse NeuralProphet")
                 
                 # Remplace 'chemin/vers/ton_image_prophet.png' par ton vrai nom de fichier
-                st.image("prophet.png", caption="Décomposition de Tendance", use_container_width=True)
+                st.image("prophet.png", caption="", use_container_width=True)
                 
                 st.success("NeuralProphet confirme la saisonnalité hebdomadaire du titre.")
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -290,6 +290,7 @@ st.sidebar.image("https://static.vecteezy.com/ti/vecteur-libre/t1/12921176-fond-
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status :** Optimal")
 st.sidebar.write(f"📅 **Dernière synchronisation :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
 
