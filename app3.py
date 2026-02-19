@@ -216,6 +216,14 @@ with tab1:
 
     if run_analysis:
         with st.spinner("Chargement des rapports visuels..."):
+            df_live = get_live_data(ticker)
+            
+            if df_live is None or df_live.empty:
+                st.error("Impossible de récupérer les données pour ce symbole.")
+            else:
+                # --- SAUVEGARDE DANS LA SESSION ---
+                st.session_state['df_live'] = df_live
+                st.session_state['ticker_name'] = ticker
             # Simulation d'un petit délai pour l'effet "IA"
             import time
             time.sleep(1) 
@@ -242,17 +250,26 @@ with tab1:
                 
                 st.success("NeuralProphet confirme la saisonnalité hebdomadaire du titre.")
                 st.markdown("</div>", unsafe_allow_html=True)
-
+    if 'df_live' in st.session_state:
+        df_to_plot = st.session_state['df_live']
+        last_price = float(df_to_plot['Close'].iloc[-1])
 with tab2:
-    if 'df_live' in locals() or 'df_live' in globals():
-        st.write("### Analyse des Indicateurs de Tension")
+    # On vérifie si la variable existe dans le session_state
+    if 'df_live' in st.session_state:
+        df_analysis = st.session_state['df_live']
+        st.write(f"### Analyse des indicateurs de tension : {st.session_state['ticker_name']}")
+        
         c1, c2 = st.columns(2)
         with c1:
-            st.line_chart(df_live['RSI'].tail(50))
-            st.caption("RSI (Relative Strength Index) - Normalisé")
+            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+            st.line_chart(df_analysis['RSI'].tail(100))
+            st.caption("RSI (Relative Strength Index) - Dynamique 100 derniers jours")
+            st.markdown("</div>", unsafe_allow_html=True)
         with c2:
-            st.line_chart(df_live['VIX_Norm'].tail(50))
-            st.caption("VIX (Volatility Index) - Z-Score")
+            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+            st.line_chart(df_analysis['VIX_Norm'].tail(100))
+            st.caption("VIX (Volatility Index) - Z-Score de tension")
+            st.markdown("</div>", unsafe_allow_html=True)
 
 with tab3:
     st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
@@ -271,6 +288,7 @@ st.sidebar.image("https://static.vecteezy.com/ti/vecteur-libre/t1/12921176-fond-
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status :** Optimal")
 st.sidebar.write(f"📅 **Dernière synchronisation :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
 
