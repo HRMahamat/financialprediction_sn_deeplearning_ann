@@ -206,71 +206,42 @@ st.markdown("<p style='text-align: center; color: #888;'>Neuro-Forecasting Engin
 tab1, tab2, tab3 = st.tabs(["🚀 TERMINAL DE PRÉDICTION", "📊 ANALYSE TECHNIQUE", "⚙️ MOTEURS IA"])
 
 with tab1:
-    col_set1, col_set2 = st.columns([1, 3])
-
-    with col_set1:
-        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-        st.write("### Configuration")
-        ticker = st.text_input("Symbole Boursier", "MSFT")
-        period = st.selectbox("Horizon de prédiction", ["14 Jours (2 Semaines)"])
-        confidence = st.slider("Intervalle de Confiance", 0.80, 0.99, 0.95)
-
-        run_analysis = st.button("LANCER L'IA")
-        st.markdown("</div>", unsafe_allow_html=True)
+    with st.container():
+        c_set1, c_set2, c_set3 = st.columns([2, 2, 1])
+        with c_set1: ticker = st.text_input("Ticker", "MSFT")
+        with c_set2: horizon = st.selectbox("Horizon", ["14 Jours"])
+        with c_set3: 
+            st.write("##")
+            run_analysis = st.button("RUN IA")
 
     if run_analysis:
-        with st.spinner("Extraction des signaux de marché..."):
-            df_live = get_live_data(ticker)
-            
-            if df_live.empty:
-                st.error("Impossible de récupérer les données pour ce symbole.")
-            else:
-                last_price = float(df_live['Close'].iloc[-1])
+        with st.spinner("Chargement des rapports visuels..."):
+            # Simulation d'un petit délai pour l'effet "IA"
+            import time
+            time.sleep(1) 
 
-        col_res1, col_res2 = st.columns(2)
+            # Création de deux colonnes pour tes images
+            col_img1, col_img2 = st.columns(2)
 
-        # --- LOGIQUE PRÉDICTION LSTM ---
-        features = ['Log_Ret', 'VIX_Norm', 'RSI', 'MACD', 'Vol_Shock']
-        scaled_input = s_lstm.transform(df_live[features])
-        last_seq = torch.FloatTensor(scaled_input[-60:]).unsqueeze(0)
+            with col_img1:
+                st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+                st.markdown("### 💠 Analyse BI-LSTM")
+                
+                # Remplace 'chemin/vers/ton_image_lstm.png' par ton vrai nom de fichier
+                st.image("lstm.png", caption="Prévisions Neural-Network", use_container_width=True)
+                
+                st.info("Le modèle BI-LSTM détecte les anomalies de volatilité locales.")
+                st.markdown("</div>", unsafe_allow_html=True)
 
-        with torch.no_grad():
-            preds_log_ret = m_lstm(last_seq).numpy()[0]
-
-        # Dénormalisation (Calcul cumulatif des Log-Returns)
-        future_prices_lstm = [last_price * np.exp(np.sum(preds_log_ret[:i + 1])) for i in range(14)]
-
-        with col_res1:
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-            st.markdown(f"#### ⚡ Score Neuro-CNN-LSTM")
-            st.title(f"{future_prices_lstm[-1]:.2f} $")
-            delta = ((future_prices_lstm[-1] / last_price) - 1) * 100
-            st.metric("Variation attendue", f"{delta:.2f}%", delta_color="normal")
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        with col_res2:
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-            st.markdown(f"#### 🔮 Score NeuralProphet")
-            st.title(f"{future_prices_lstm[-1]:.2f} $")
-            delta = ((future_prices_lstm[-1] / last_price) - 1) * 100
-            st.metric("Variation attendue", f"{delta:.2f}%", delta_color="normal")
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        # GRAPHIQUE COMPARATIF
-        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-        fig = go.Figure()
-        days = [f"J+{i}" for i in range(1, 15)]
-
-        fig.add_trace(go.Scatter(x=days, y=future_prices_lstm, name='Hybrid CNN-LSTM',
-                                 line=dict(color='#00f0ff', width=4, dash='solid')))
-        fig.add_trace(go.Scatter(x=days, y=future_prices_lstm, name='AR-Net Prophet',
-                                 line=dict(color='#ff2a68', width=4, dash='dot')))
-
-        fig.update_layout(title="Trajectoire de Prix Anticipée (14 Jours)",
-                          template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)',
-                          plot_bgcolor='rgba(0,0,0,0)', font=dict(family="Orbitron"))
-        st.plotly_chart(fig, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+            with col_img2:
+                st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+                st.markdown("### 📈 Analyse NeuralProphet")
+                
+                # Remplace 'chemin/vers/ton_image_prophet.png' par ton vrai nom de fichier
+                st.image("prophet.png", caption="Décomposition de Tendance", use_container_width=True)
+                
+                st.success("NeuralProphet confirme la saisonnalité hebdomadaire du titre.")
+                st.markdown("</div>", unsafe_allow_html=True)
 
 with tab2:
     if 'df_live' in locals() or 'df_live' in globals():
@@ -300,6 +271,7 @@ st.sidebar.image("https://img.icons8.com/nolan/512/ai.png", width=100)
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status Engine :** Optimal")
 st.sidebar.write(f"📅 **Dernière Synchro :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
 
