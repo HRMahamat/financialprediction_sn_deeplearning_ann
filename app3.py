@@ -14,7 +14,7 @@ import matplotlib.patheffects as patheffects
 # ==========================================
 # 1. STYLE CSS "CYBER-TRADING" (ULTRA-GLOW)
 # ==========================================
-st.set_page_config(page_title="Alpha Predict Pro", layout="wide", page_icon="📈")
+st.set_page_config(page_title="Financial Prediction", layout="wide", page_icon="📈")
 
 st.markdown("""
     <style>
@@ -267,10 +267,11 @@ with tab3:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer
-st.sidebar.image("https://img.icons8.com/nolan/512/ai.png", width=100)
+st.sidebar.image("https://static.vecteezy.com/ti/vecteur-libre/t1/18021984-analytique-finance-prevision-marche-prevision-plat-couleur-icone-vecteur-gratuit-vectoriel.jpg", width=100)
 st.sidebar.markdown("---")
-st.sidebar.write("🟢 **Status Engine :** Optimal")
-st.sidebar.write(f"📅 **Dernière Synchro :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+st.sidebar.write("🟢 **Status :** Optimal")
+st.sidebar.write(f"📅 **Dernière synchronisation :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
 
