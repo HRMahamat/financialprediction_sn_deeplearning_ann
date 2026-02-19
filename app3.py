@@ -267,10 +267,11 @@ with tab3:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer
-st.sidebar.image("https://static.vecteezy.com/ti/vecteur-libre/t1/18021984-analytique-finance-prevision-marche-prevision-plat-couleur-icone-vecteur-gratuit-vectoriel.jpg", width=100)
+st.sidebar.image("https://static.vecteezy.com/ti/vecteur-libre/t1/12921176-fond-de-presentation-creative-rouge-et-noir-pour-l-analyse-finance-prevoir-marche-icone-de-la-ligne-de-prediction-gratuit-vectoriel.jpg", width=100)
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status :** Optimal")
 st.sidebar.write(f"📅 **Dernière synchronisation :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
 
