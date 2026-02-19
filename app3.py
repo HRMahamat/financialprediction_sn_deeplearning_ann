@@ -270,6 +270,8 @@ with tab2:
             st.line_chart(df_analysis['VIX_Norm'].tail(100))
             st.caption("VIX (Volatility Index) - Z-Score de tension")
             st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        st.info("⚠️ Veuillez lancer l'IA dans le terminal de prédiction pour charger les données techniques!")
 
 with tab3:
     st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
@@ -288,6 +290,7 @@ st.sidebar.image("https://static.vecteezy.com/ti/vecteur-libre/t1/12921176-fond-
 st.sidebar.markdown("---")
 st.sidebar.write("🟢 **Status :** Optimal")
 st.sidebar.write(f"📅 **Dernière synchronisation :** {datetime.datetime.now().strftime('%H:%M:%S')}")
+
 
 
 
