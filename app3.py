@@ -236,7 +236,7 @@ with tab1:
                 st.markdown("### 💠 Analyse BI-LSTM")
                 
                 # Remplace 'chemin/vers/ton_image_lstm.png' par ton vrai nom de fichier
-                st.image("lstm.png", caption="", use_container_width=True)
+                st.image("predict_bilstm.png", caption="", use_container_width=True)
                 
                 st.info("Le modèle BI-LSTM détecte les anomalies de volatilité locales.")
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -246,7 +246,7 @@ with tab1:
                 st.markdown("### 📈 Analyse NeuralProphet")
                 
                 # Remplace 'chemin/vers/ton_image_prophet.png' par ton vrai nom de fichier
-                st.image("prophet.png", caption="", use_container_width=True)
+                st.image("predict_neuralprophet.png", caption="", use_container_width=True)
                 
                 st.success("NeuralProphet confirme la saisonnalité hebdomadaire du titre.")
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -277,7 +277,7 @@ with tab3:
     st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
     st.write("### Spécifications Techniques")
     st.info(
-        "**Modèle 1 : CNN-LSTM** - Analyse la structure locale (Conv1D) et les dépendances temporelles longues (Bi-LSTM) sur les Log-Returns.")
+        "**Modèle 1 : RNN-LSTM** - Analyse les dépendances temporelles longues (Bi-LSTM) sur les Log-Returns.")
     st.success(
         "**Modèle 2 : NeuralProphet** - Utilise un réseau AR-Net pour décomposer la saisonnalité et l'impact des régresseurs externes (VIX, RSI).")
     st.write("---")
